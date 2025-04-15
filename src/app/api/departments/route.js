@@ -1,3 +1,4 @@
+// app/api/departments/route.ts
 import dbConnect from '../../../lib/dbConnect';
 import Department from '../../../models/Department';
 
