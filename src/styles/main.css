@@ -1,0 +1,133 @@
+/* @import "tailwindcss/preflight"; /* Подключаем начальные стили */
+/* @tailwind utilities; Подключаем утилитарные классы */
+*, ::before, ::after{
+  box-sizing: border-box;
+  border-width: 0;
+  border-style: solid;
+}
+html{
+  line-height: 1.5;
+    -webkit-text-size-adjust: 100%;
+    -moz-tab-size: 4;
+    tab-size: 4;
+    font-family: Inter,system-ui,sans-serif;
+    font-feature-settings: normal;
+    font-variation-settings: normal;
+    -webkit-tap-highlight-color: transparent
+}
+body {
+  /* margin: 0; */
+  font-family: -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif
+    /* sans-serif; */
+  /* -webkit-font-smoothing: antialiased; */
+  /* -moz-osx-font-smoothing: grayscale; */
+  /* color: rgb(103, 116, 142); */
+  /* font-size: 14px; */
+  /* font-weight: 500; */
+}
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+.layout {
+  display: flex;
+  height: 100vh; /* Высота на весь экран */
+}
+
+.sidebar {
+  width: 280px;
+  transition-duration: 3s;
+  transition-timing-function: ease;
+  background: #fefefe;
+  color: #4B5675;
+  box-sizing: border-box;
+  
+}
+.sidebar-header{
+  display: flex;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+  justify-content: space-between;
+  align-items: center;
+  height: 70px;
+}
+.menu-title{
+  padding: 6px 10px;
+  row-gap: 10px;
+}
+.menu-title:hover{
+  color: #1b84ff !important;
+  cursor: pointer;
+}
+.menu-link{
+  padding: 8px 10px;
+  row-gap: 14px;
+}
+.menu-link:hover{
+  background-color: #F9F9F9;
+}
+.content {
+  flex-grow: 1; /* Занимает все доступное место */
+  display: flex;
+  flex-direction: column;
+}
+
+.navbar {
+  width: 280px;
+  height: 60px; /* Фиксированная высота */
+  background: #444;
+  color: white;
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+}
+
+.page-content {
+  flex-grow: 1; /* Контент растягивается */
+  padding: 20px;
+}
+
+.task-card.completed {
+  background-color: #e6f7e6; /* Светло-зеленый */
+  border: 1px solid #2ecc71; /* Зеленая рамка */
+}
+
+.completed-text {
+  color: #27ae60; /* Приятный зеленый цвет */
+  font-weight: bold;
+  margin-top: 8px;
+}
