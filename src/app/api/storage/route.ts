@@ -4,7 +4,7 @@ import { NextRequest } from 'next/server'
 import dbConnect from '@/lib/dbConnect'
 import Storage from '@/models/storage'
 
-// GET: Получить все ячейки и поиск
+// GET: Получить все ячейки с фильтрацией и поиском
 export async function GET(req: NextRequest) {
   await dbConnect();
 
@@ -12,15 +12,27 @@ export async function GET(req: NextRequest) {
   const section = searchParams.get("section");
   const level = searchParams.get("level");
   const cell = searchParams.get("cell");
+  const search = searchParams.get("search"); // ➕ Поиск по тексту
 
   const filter: any = {};
+
+  // фильтрация по полям
   if (section) filter.section = section;
   if (level) filter.level = level;
   if (cell) filter.cell = cell;
 
+  // если указан поисковый текст
+  if (search) {
+    filter.$or = [
+      { label: { $regex: search, $options: "i" } },
+      { barcode: { $regex: search, $options: "i" } },
+    ];
+  }
+
   const storages = await Storage.find(filter).sort({ createdAt: -1 });
   return Response.json(storages);
 }
+
 
 // POST: Создать новую ячейку
 export async function POST(req: NextRequest) {

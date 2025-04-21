@@ -17,7 +17,11 @@ export default function WarehousePage() {
         </Link>
 
         <Link href="/warehouse/list">
-          <Button variant="secondary">Управление складами</Button>
+           <Button variant="default">Управление складами</Button>{/* variant="secondary" */}
+        </Link>
+
+        <Link href="/storage">
+          <Button variant="default">Топология склада</Button>
         </Link>
       </div>
     </div>
