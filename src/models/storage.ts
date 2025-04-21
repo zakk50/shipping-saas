@@ -1,19 +1,14 @@
-// src/models/storage.ts
+import mongoose from "mongoose";
 
-import mongoose from 'mongoose'
-
-const storageSchema = new mongoose.Schema(
+const StorageSchema = new mongoose.Schema(
   {
-    warehouseId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Warehouse',
-      required: true,
-    },
-    name: { type: String, required: true },
-    barcode: { type: String },
-    description: { type: String },
+    label: { type: String, required: true }, // Название/метка ячейки
+    section: String,                         // Секция/ряд
+    level: { type: String, required: true }, // Уровень
+    cell: { type: String, required: true },  // ячейка
+    barcode: String,                         // Штрихкод
   },
   { timestamps: true }
-)
+);
 
-export default mongoose.models.Storage || mongoose.model('Storage', storageSchema)
+export default mongoose.models.Storage || mongoose.model("Storage", StorageSchema);
