@@ -151,7 +151,7 @@ export default function StoragePage() {
 
       {/* 📝 Модалка редактирования */}
       <Dialog open={!!editingItem} onOpenChange={() => setEditingItem(null)}>
-        <DialogContent>
+        <DialogContent aria-describedby="dialog-description">
           <DialogTitle>Редактировать ячейку</DialogTitle>
           <div className="space-y-2">
             <Input className="" name="label" placeholder="Метка" value={editingItem?.label || ""} onChange={handleEditChange} />
