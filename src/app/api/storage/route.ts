@@ -16,12 +16,12 @@ export async function GET(req: NextRequest) {
 
   const filter: any = {};
 
-  // фильтрация по полям
-  if (section) filter.section = section;
-  if (level) filter.level = level;
-  if (cell) filter.cell = cell;
+  // Преобразуем строковые значения в числа для фильтрации
+  if (section) filter.section = parseInt(section);
+  if (level) filter.level = parseInt(level);
+  if (cell) filter.cell = parseInt(cell);
 
-  // если указан поисковый текст
+  // Если указан поисковый текст
   if (search) {
     filter.$or = [
       { label: { $regex: search, $options: "i" } },
