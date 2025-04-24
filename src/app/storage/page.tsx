@@ -1,18 +1,22 @@
-// src/app/storage/page.tsx
 "use client";
 
 import { useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Pencil } from "lucide-react";
-
 import {
   Dialog,
   DialogTrigger,
   DialogContent,
-  DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "@/components/ui/select";
 
 interface StorageType {
   _id?: string;
@@ -32,73 +36,79 @@ export default function StoragePage() {
     cell: "",
     barcode: "",
   });
-
   const [filters, setFilters] = useState({ section: "", level: "", cell: "" });
-  const [storages, setStorages] = useState<StorageType[]>([]);
+  const [sortField, setSortField] = useState<string>("label");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
   const [editingItem, setEditingItem] = useState<StorageType | null>(null);
 
   const fetchItems = async () => {
-    const res = await fetch("/api/storage");
+    const query = new URLSearchParams();
+    if (filters.section) query.append("section", filters.section);
+    if (filters.level) query.append("level", filters.level);
+    if (filters.cell) query.append("cell", filters.cell);
+    query.append("sortField", sortField);
+    query.append("sortOrder", sortOrder);
+    const res = await fetch(`/api/storage?${query.toString()}`);
     const data = await res.json();
     setItems(data);
   };
 
   useEffect(() => {
     fetchItems();
-  }, []);
+  }, [filters, sortField, sortOrder]);
 
+  // Обработчик изменения значений в форме
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setForm((prev) => ({
-      ...prev,
-      [e.target.name]: e.target.value,
-    }));
+    setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
+  // Обработчик отправки формы
   const handleSubmit = async () => {
     await fetch("/api/storage", {
       method: "POST",
       body: JSON.stringify(form),
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: { "Content-Type": "application/json" },
     });
     setForm({ label: "", section: "", level: "", cell: "", barcode: "" });
     fetchItems();
   };
 
-  const fetchStorages = async () => {
-    const query = new URLSearchParams();
-    if (filters.section) query.append("section", filters.section);
-    if (filters.level) query.append("level", filters.level);
-    if (filters.cell) query.append("cell", filters.cell);
-
-    console.log("QUERY:", query.toString()); // 👈 добавь это
-    
-    const res = await fetch(`/api/storage?${query.toString()}`);
-    const data = await res.json();
-    setStorages(data);
-  };
-
+  // Обработчик изменения значений при редактировании ячейки
   const handleEditChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!editingItem) return;
     setEditingItem({ ...editingItem, [e.target.name]: e.target.value });
   };
 
+  // Обработчик обновления ячейки
   const handleUpdate = async () => {
     if (!editingItem?._id) return;
-
     await fetch(`/api/storage/${editingItem._id}`, {
       method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(editingItem),
     });
-
     setEditingItem(null);
     fetchItems();
   };
 
+    // Обработчик изменения фильтров
+    const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement>, filterType: string) => {
+      setFilters((prevFilters) => ({
+        ...prevFilters,
+        [filterType]: e.target.value,
+      }));
+    };
+  
+    // Обработчик изменения поля сортировки
+    const handleSortChange = (value: string) => {
+      setSortField(value);
+    };
+  
+    // Обработчик изменения порядка сортировки
+    const handleSortOrderChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+      setSortOrder(e.target.value as "asc" | "desc");
+    };
+    console.log("filters:", filters);
   return (
     <div className="p-6 space-y-6">
       <h1 className="text-xl font-bold">Создание ячейки хранения</h1>
@@ -111,47 +121,53 @@ export default function StoragePage() {
         <Button onClick={handleSubmit}>Создать ячейку</Button>
       </div>
 
-      {/* 🔍 Поиск */}
-      <div className="flex gap-2 flex-wrap mt-6">
-  <Input
-    className="w-40"
-    placeholder="Фильтр: Ряд"
-    value={filters.section}
-    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-      setFilters({ ...filters, section: e.target.value })
-    }
-  />
-  <Input
-    className="w-40"
-    placeholder="Фильтр: Ярус"
-    value={filters.level}
-    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-      setFilters({ ...filters, level: e.target.value })
-    }
-  />
-  <Input
-    className="w-40"
-    placeholder="Фильтр: Ячейка"
-    value={filters.cell}
-    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-      setFilters({ ...filters, cell: e.target.value })
-    }
-  />
-  <Button onClick={fetchStorages}>Поиск</Button>
-  <Button
-    onClick={() => {
-      setFilters({ section: "", level: "", cell: "" });
-      fetchStorages();
-    }}
-  >
-    Сброс
-  </Button>
-</div>
+      <div className="flex flex-wrap gap-2 items-center mt-6">
+        <Input
+          className="w-32"
+          placeholder="Фильтр: Ряд"
+          value={filters.section}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleFilterChange(e, "section")}
+        />
 
+        <Input
+          className="w-32"
+          placeholder="Фильтр: Ярус"
+          value={filters.level}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleFilterChange(e, "level")}
+        />
 
-      {/* 📝 Модалка редактирования */}
+        <Input
+          className="w-32"
+          placeholder="Фильтр: Ячейка"
+          value={filters.cell}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleFilterChange(e, "cell")}
+        />
+        <Select value={sortField} onValueChange={handleSortChange}>
+          <SelectTrigger className="w-40">
+            <SelectValue placeholder="Поле сортировки" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="label">Метка</SelectItem>
+            <SelectItem value="section">Секция</SelectItem>
+            <SelectItem value="level">Уровень</SelectItem>
+            <SelectItem value="cell">Ячейка</SelectItem>
+          </SelectContent>
+        </Select>
+        <Select value={sortOrder} onValueChange={(value) => setSortOrder(value as "asc" | "desc")}> 
+          <SelectTrigger className="w-28">
+            <SelectValue placeholder="Порядок" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="asc">По возрастанию</SelectItem>
+            <SelectItem value="desc">По убыванию</SelectItem>
+          </SelectContent>
+        </Select>
+        <Button onClick={fetchItems}>Применить</Button>
+        <Button onClick={() => { setFilters({ section: "", level: "", cell: "" }); setSortField("label"); setSortOrder("asc"); fetchItems(); }}>Сброс</Button>
+      </div>
+
       <Dialog open={!!editingItem} onOpenChange={() => setEditingItem(null)}>
-        <DialogContent aria-describedby="dialog-description">
+        <DialogContent>
           <DialogTitle>Редактировать ячейку</DialogTitle>
           <div className="space-y-2">
             <Input className="" name="label" placeholder="Метка" value={editingItem?.label || ""} onChange={handleEditChange} />
@@ -160,29 +176,41 @@ export default function StoragePage() {
             <Input className="" name="cell" placeholder="Ячейка" value={editingItem?.cell || ""} onChange={handleEditChange} />
             <Input className="" name="barcode" placeholder="Штрихкод" value={editingItem?.barcode || ""} onChange={handleEditChange} />
           </div>
-          <div className="flex justify-end gap-2 mt-4">
+          <div className="flex justify-end mt-4">
             <Button onClick={handleUpdate}>Сохранить</Button>
           </div>
         </DialogContent>
       </Dialog>
 
-      {/* 📦 Список ячеек */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-6">
-        {items.map((item) => (
-          <div key={item._id} className="border p-4 rounded-xl shadow space-y-2">
-            <div className="flex justify-between items-center">
-              <strong>{item.label}</strong>
-              <Button variant="default" onClick={() => setEditingItem(item)}>
-                <Pencil className="w-4 h-4" />
-              </Button>
-            </div>
-            <p>Секция: {item.section}</p>
-            <p>Ячейка: {item.cell}</p>
-            <p>Уровень: {item.level}</p>
-            <p>Штрихкод: {item.barcode}</p>
-          </div>
-        ))}
-      </div>
+      <table className="w-full table-auto mt-6 border rounded">
+  <thead>
+    <tr className="bg-gray-100">
+      <th className="px-4 py-2 text-left">Метка</th>
+      <th className="px-4 py-2 text-left">Секция</th>
+      <th className="px-4 py-2 text-left">Уровень</th>
+      <th className="px-4 py-2 text-left">Ячейка</th>
+      <th className="px-4 py-2 text-left">Штрихкод</th>
+      <th className="px-4 py-2 text-right">Действия</th>
+    </tr>
+  </thead>
+  <tbody>
+    {items.map((item) => (
+      <tr key={item._id} className="border-t">
+        <td className="px-4 py-2">{item.label}</td>
+        <td className="px-4 py-2">{item.section}</td>
+        <td className="px-4 py-2">{item.level}</td>
+        <td className="px-4 py-2">{item.cell}</td>
+        <td className="px-4 py-2">{item.barcode}</td>
+        <td className="px-4 py-2 text-right">
+          <Button variant="default" onClick={() => setEditingItem(item)}>
+            <Pencil className="w-4 h-4" />
+          </Button>
+        </td>
+      </tr>
+    ))}
+  </tbody>
+</table>
+
     </div>
   );
 }

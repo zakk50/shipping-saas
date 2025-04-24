@@ -16,10 +16,10 @@ export async function GET(req: NextRequest) {
 
   const filter: any = {};
 
-  // Преобразуем строковые значения в числа для фильтрации
-  if (section) filter.section = parseInt(section);
-  if (level) filter.level = parseInt(level);
-  if (cell) filter.cell = parseInt(cell);
+  // Оставляем как строки (без parseInt)
+  if (section) filter.section = section;
+  if (level) filter.level = level;
+  if (cell) filter.cell = cell;
 
   // Если указан поисковый текст
   if (search) {
@@ -32,7 +32,6 @@ export async function GET(req: NextRequest) {
   const storages = await Storage.find(filter).sort({ createdAt: -1 });
   return Response.json(storages);
 }
-
 
 // POST: Создать новую ячейку
 export async function POST(req: NextRequest) {
