@@ -14,14 +14,18 @@ export async function GET(req: NextRequest) {
   const cell = searchParams.get("cell");
   const search = searchParams.get("search"); // ➕ Поиск по тексту
 
+  const page = parseInt(searchParams.get("page") || "1", 10);
+  const pageSize = parseInt(searchParams.get("pageSize") || "10", 10);
+
+  const sortField = searchParams.get("sortField") || "createdAt";
+  const sortOrder = searchParams.get("sortOrder") === "desc" ? -1 : 1;
+
   const filter: any = {};
 
-  // Оставляем как строки (без parseInt)
   if (section) filter.section = section;
   if (level) filter.level = level;
   if (cell) filter.cell = cell;
 
-  // Если указан поисковый текст
   if (search) {
     filter.$or = [
       { label: { $regex: search, $options: "i" } },
@@ -29,9 +33,19 @@ export async function GET(req: NextRequest) {
     ];
   }
 
-  const storages = await Storage.find(filter).sort({ createdAt: -1 });
-  return Response.json(storages);
+  const skip = (page - 1) * pageSize;
+
+  const [items, totalItems] = await Promise.all([
+    Storage.find(filter)
+      .sort({ [sortField]: sortOrder })
+      .skip(skip)
+      .limit(pageSize),
+    Storage.countDocuments(filter),
+  ]);
+
+  return Response.json({ items, totalItems });
 }
+
 
 // POST: Создать новую ячейку
 export async function POST(req: NextRequest) {
