@@ -1,9 +1,11 @@
+// src/app/storage/page.tsx
 "use client";
 
 import { useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Pencil } from "lucide-react";
+
 import {
   Dialog,
   DialogTrigger,
@@ -32,7 +34,7 @@ export default function StoragePage() {
   });
 
   const [filters, setFilters] = useState({ section: "", level: "", cell: "" });
-  const [storages, setStorages] = useState<StorageType[]>([]); // Используем storages для отображения
+  const [storages, setStorages] = useState<StorageType[]>([]);
   const [editingItem, setEditingItem] = useState<StorageType | null>(null);
 
   const fetchItems = async () => {
@@ -41,19 +43,8 @@ export default function StoragePage() {
     setItems(data);
   };
 
-  const fetchStorages = async () => {
-    const query = new URLSearchParams();
-    if (filters.section) query.append("section", filters.section);
-    if (filters.level) query.append("level", filters.level);
-    if (filters.cell) query.append("cell", filters.cell);
-
-    const res = await fetch(`/api/storage?${query.toString()}`);
-    const data = await res.json();
-    setStorages(data);  // Заполняем storages вместо items
-  };
-
   useEffect(() => {
-    fetchStorages();  // Вызовем fetchStorages при загрузке страницы
+    fetchItems();
   }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -73,6 +64,19 @@ export default function StoragePage() {
     });
     setForm({ label: "", section: "", level: "", cell: "", barcode: "" });
     fetchItems();
+  };
+
+  const fetchStorages = async () => {
+    const query = new URLSearchParams();
+    if (filters.section) query.append("section", filters.section);
+    if (filters.level) query.append("level", filters.level);
+    if (filters.cell) query.append("cell", filters.cell);
+
+    console.log("QUERY:", query.toString()); // 👈 добавь это
+    
+    const res = await fetch(`/api/storage?${query.toString()}`);
+    const data = await res.json();
+    setStorages(data);
   };
 
   const handleEditChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -109,40 +113,41 @@ export default function StoragePage() {
 
       {/* 🔍 Поиск */}
       <div className="flex gap-2 flex-wrap mt-6">
-        <Input
-          className="w-40"
-          placeholder="Фильтр: Ряд"
-          value={filters.section}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-            setFilters({ ...filters, section: e.target.value })
-          }
-        />
-        <Input
-          className="w-40"
-          placeholder="Фильтр: Ярус"
-          value={filters.level}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-            setFilters({ ...filters, level: e.target.value })
-          }
-        />
-        <Input
-          className="w-40"
-          placeholder="Фильтр: Ячейка"
-          value={filters.cell}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-            setFilters({ ...filters, cell: e.target.value })
-          }
-        />
-        <Button onClick={fetchStorages}>Поиск</Button>
-        <Button
-          onClick={() => {
-            setFilters({ section: "", level: "", cell: "" });
-            fetchStorages();
-          }}
-        >
-          Сброс
-        </Button>
-      </div>
+  <Input
+    className="w-40"
+    placeholder="Фильтр: Ряд"
+    value={filters.section}
+    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+      setFilters({ ...filters, section: e.target.value })
+    }
+  />
+  <Input
+    className="w-40"
+    placeholder="Фильтр: Ярус"
+    value={filters.level}
+    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+      setFilters({ ...filters, level: e.target.value })
+    }
+  />
+  <Input
+    className="w-40"
+    placeholder="Фильтр: Ячейка"
+    value={filters.cell}
+    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+      setFilters({ ...filters, cell: e.target.value })
+    }
+  />
+  <Button onClick={fetchStorages}>Поиск</Button>
+  <Button
+    onClick={() => {
+      setFilters({ section: "", level: "", cell: "" });
+      fetchStorages();
+    }}
+  >
+    Сброс
+  </Button>
+</div>
+
 
       {/* 📝 Модалка редактирования */}
       <Dialog open={!!editingItem} onOpenChange={() => setEditingItem(null)}>
@@ -163,7 +168,7 @@ export default function StoragePage() {
 
       {/* 📦 Список ячеек */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-6">
-        {storages.map((item) => (  {/* Изменил с items на storages */}
+        {items.map((item) => (
           <div key={item._id} className="border p-4 rounded-xl shadow space-y-2">
             <div className="flex justify-between items-center">
               <strong>{item.label}</strong>
