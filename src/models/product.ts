@@ -1,18 +1,18 @@
 import mongoose, { Schema, models } from 'mongoose'
 
-const ProductSchema = new mongoose.Schema({
-  name: { type: String, required: true },
-  sku: { type: String, unique: true },
-  barcode: { type: String },
-  description: { type: String },
-  category: { type: String },
-  stockByWarehouse: [
-    {
-      warehouseId: { type: Schema.Types.ObjectId, ref: 'Warehouse' },
-      quantity: { type: Number, default: 0 },
+const ProductSchema = new mongoose.Schema(
+  {
+    name: { type: String, required: true },
+    sku: { type: String },
+    quantity: { type: Number, default: 1 },
+    storageId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Storage',
+      required: false,
     },
-  ],
-}, { timestamps: true })
+  },
+  { timestamps: true }
+);
 
 const Product = models.Product || mongoose.model('Product', ProductSchema)
 
