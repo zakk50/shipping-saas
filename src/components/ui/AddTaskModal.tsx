@@ -35,7 +35,7 @@ const AddTaskModal = ({ onTaskCreated }: { onTaskCreated: () => void }) => {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger >
+      <DialogTrigger asChild>
         <Button variant="default">Добавить задачу</Button>
       </DialogTrigger>
 

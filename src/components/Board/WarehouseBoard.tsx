@@ -97,7 +97,7 @@ export default function BoardPage() {
         <h2 className="text-2xl font-bold">Канбан-доска</h2>
 
         <Dialog open={open} onOpenChange={setOpen}>
-          <DialogTrigger>
+          <DialogTrigger asChild>
             <Button onClick={() => setOpen(true)}>Создать задачу</Button>
           </DialogTrigger>
           <DialogContent aria-describedby={undefined}>

@@ -9,9 +9,8 @@ const Sidebar = () => {
         <Link href="/products" className="hover:text-gray-400">Товары</Link>
         <Link href="/production" className="hover:text-gray-400">Производство</Link>
         <Link href="/purchasing" className="hover:text-gray-400">Закупки</Link>
-        <Link href="/lab-kk" className="hover:text-gray-400">Лаборатория КК</Link>
+        <Link href="/labKK" className="hover:text-gray-400">Лаборатория КК</Link>
         <Link href="/departments" className="hover:text-gray-400">Отделы</Link>
-        <Link href="/materials/create" className="hover:text-gray-400">Добавить материал</Link>
         <Link href="/users" className="hover:text-gray-400">Пользователи</Link>
         <Link href="/safety" className="hover:text-gray-400">Охрана труда</Link>
         <Link href="/technical" className="hover:text-gray-400">Техническая служба🛠️</Link>

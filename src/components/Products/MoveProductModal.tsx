@@ -24,12 +24,13 @@ export default function MoveProductModal({ productId, currentStorageId, onMoved 
       const res = await fetch('/api/storage');
       const data = await res.json();
   
-      if (Array.isArray(data)) {
-        setStorages(data);
+      if (Array.isArray(data.items)) {
+        setStorages(data.items);
       } else {
         console.error('API /api/storage не вернул массив:', data);
-        setStorages([]); // пустой массив на всякий случай
+        setStorages([]);
       }
+      
     };
     fetchStorages();
   }, []);
@@ -51,7 +52,7 @@ export default function MoveProductModal({ productId, currentStorageId, onMoved 
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger>
+      <DialogTrigger asChild>
         <Button variant="default">Переместить</Button>
       </DialogTrigger>
       <DialogContent>

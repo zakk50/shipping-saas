@@ -13,7 +13,7 @@ export async function GET(req: NextRequest) {
   const level = searchParams.get("level");
   const cell = searchParams.get("cell");
   const search = searchParams.get("search"); // ➕ Поиск по тексту
-
+  // пагинация
   const page = parseInt(searchParams.get("page") || "1", 10);
   const pageSize = parseInt(searchParams.get("pageSize") || "10", 10);
 

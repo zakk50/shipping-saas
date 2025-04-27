@@ -78,7 +78,7 @@ const handleSubmit = async (e) => {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger>
+      <DialogTrigger asChild>
         <Button>Добавить задачу</Button>
       </DialogTrigger>
       <DialogContent>
