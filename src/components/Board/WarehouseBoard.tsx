@@ -135,7 +135,7 @@ export default function BoardPage() {
         {columns.map((col) => (
           <div
             key={col.status}
-            className="bg-gray-700 p-4 rounded shadow min-h-[500px]"
+            className="bg-gray-400 p-4 rounded shadow min-h-[500px]"
             onDragOver={(e) => e.preventDefault()}
             onDrop={(e: React.DragEvent<HTMLDivElement>) => {
               const taskId = e.dataTransfer.getData('taskId');

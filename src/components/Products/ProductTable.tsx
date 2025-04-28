@@ -1,3 +1,4 @@
+// src/components/Products/ProductTable.tsx
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -14,6 +15,7 @@ import {
 import { Skeleton } from '@/components/ui/skeleton';
 import AddProductModal from './AddProductModal';
 import MoveProductModal from './MoveProductModal';
+import { Badge } from '@/components/ui/badge';
 
 export default function ProductTable() {
   const [products, setProducts] = useState<any[]>([]);
@@ -31,6 +33,32 @@ export default function ProductTable() {
   useEffect(() => {
     fetchProducts();
   }, [search]);
+
+  const getStatusLabel = (status: string) => {
+    const labels: Record<string, string> = {
+      QC: 'Проверка',
+      ok: 'Годен',
+      nook: 'Брак',
+      exp: 'Просрочен',
+      rework: 'Доработка',
+    };
+    return labels[status] || status;
+  };
+
+  const getStatusVariant = (status: string): 'default' | 'secondary' | 'destructive' | 'outline' => {
+    switch (status) {
+      case 'ok':
+        return 'default';
+      case 'nook':
+      case 'exp':
+        return 'destructive';
+      case 'rework':
+        return 'secondary';
+      case 'QC':
+      default:
+        return 'outline';
+    }
+  };
 
   return (
     <div className="space-y-4">
@@ -51,6 +79,7 @@ export default function ProductTable() {
             <TableHead>SKU</TableHead>
             <TableHead>Количество</TableHead>
             <TableHead>Ячейка</TableHead>
+            <TableHead>Статус</TableHead>
             <TableHead>Действия</TableHead>
           </TableRow>
         </TableHeader>
@@ -63,6 +92,7 @@ export default function ProductTable() {
                 <TableCell><Skeleton className="h-4 w-10" /></TableCell>
                 <TableCell><Skeleton className="h-4 w-16" /></TableCell>
                 <TableCell><Skeleton className="h-4 w-20" /></TableCell>
+                <TableCell><Skeleton className="h-4 w-20" /></TableCell>
               </TableRow>
             ))
           ) : products.length > 0 ? (
@@ -72,6 +102,11 @@ export default function ProductTable() {
                 <TableCell>{p.sku}</TableCell>
                 <TableCell>{p.quantity}</TableCell>
                 <TableCell>{p.storageId?.label || '—'}</TableCell>
+                <TableCell>
+                  <Badge variant={getStatusVariant(p.status)}>
+                    {getStatusLabel(p.status)}
+                  </Badge>
+                </TableCell>
                 <TableCell>
                   <MoveProductModal
                     productId={p._id}
@@ -83,7 +118,7 @@ export default function ProductTable() {
             ))
           ) : (
             <TableRow>
-              <TableCell colSpan={5} className="text-center text-muted-foreground py-6">
+              <TableCell colSpan={6} className="text-center text-muted-foreground py-6">
                 Ничего не найдено
               </TableCell>
             </TableRow>
