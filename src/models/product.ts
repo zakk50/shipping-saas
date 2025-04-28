@@ -10,6 +10,11 @@ const ProductSchema = new mongoose.Schema(
       ref: 'Storage',
       required: false,
     },
+    status: {
+      type: String,
+      enum: ['QC', 'ok', 'nook', 'exp', 'rework'],
+      default: 'QC', // по умолчанию устанавливаем QC
+    },
   },
   { timestamps: true }
 );
